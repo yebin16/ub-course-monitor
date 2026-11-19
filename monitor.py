@@ -63,8 +63,21 @@ async def main():
                 (await page.locator("body").inner_text())[:5000],
                 flush=True
             )
+            spring = page.get_by_text("Spring 2027", exact=True)
 
-                await page.screenshot(
+            print("Spring 2027 matches:", await spring.count(), flush=True)
+
+            if await spring.count() > 0:
+                await spring.first.click(timeout=15000)
+                await page.wait_for_timeout(5000)
+
+                print("After Spring 2027 URL:", page.url, flush=True)
+                print(
+                    "After Spring 2027 content:",
+                    (await page.locator("body").inner_text())[:5000],
+                    flush=True
+                )
+            await page.screenshot(
                 path="hub-test.png",
                 full_page=True
             )
