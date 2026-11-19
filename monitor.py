@@ -57,6 +57,18 @@ async def main():
                 print("Clicking COURSE SCHEDULE...", flush=True)
                 await button.first.click(timeout=15000)
                 await page.wait_for_timeout(5000)
+                print("After click URL:", page.url, flush=True)
+                print(
+                "After click page content:",
+                (await page.locator("body").inner_text())[:5000],
+                flush=True
+            )
+
+                await page.screenshot(
+                path="hub-test.png",
+                full_page=True
+            )
+
             else:
                 print(
                     "COURSE SCHEDULE not found in main frame.",
