@@ -50,7 +50,7 @@ async def main():
                 )
 
             button = page.get_by_text(
-                "COURSE SCHEDULE", exact=True
+                "COURSE SCHEDULE", exact=False
             )
 
             if await button.count() > 0:
