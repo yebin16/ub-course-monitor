@@ -16,35 +16,54 @@ async def main():
         )
 
         try:
-            print("Opening HUB Public Class Schedule...")
+            print("Opening HUB homepage...", flush=True)
             await page.goto(
                 HUB_URL,
                 wait_until="domcontentloaded",
                 timeout=60000
             )
 
-            await page.get_by_text(
-                "COURSE SCHEDULE", exact=True
-            ).wait_for(timeout=30000)
+            await page.wait_for_timeout(10000)
 
-            print("Clicking COURSE SCHEDULE...")
-            await page.get_by_text(
-                "COURSE SCHEDULE", exact=True
-            ).click()
-
-            await page.wait_for_timeout(5000)
-
-            print("Current URL:", page.url)
-            print("Page title:", await page.title())
+            print("Current URL:", page.url, flush=True)
             print(
                 "Page preview:",
-                (await page.locator("body").inner_text())[:3000]
+                (await page.locator("body").inner_text())[:3000],
+                flush=True
             )
 
             await page.screenshot(
                 path="hub-test.png",
                 full_page=True
             )
+
+            print("Searching for COURSE SCHEDULE...", flush=True)
+
+            for frame in page.frames:
+                print("Frame:", frame.url, flush=True)
+                print(
+                    "Matches:",
+                    await frame.get_by_text(
+                        "COURSE SCHEDULE", exact=True
+                    ).count(),
+                    flush=True
+                )
+
+            button = page.get_by_text(
+                "COURSE SCHEDULE", exact=True
+            )
+
+            if await button.count() > 0:
+                print("Clicking COURSE SCHEDULE...", flush=True)
+                await button.first.click(timeout=15000)
+                await page.wait_for_timeout(5000)
+            else:
+                print(
+                    "COURSE SCHEDULE not found in main frame.",
+                    flush=True
+                )
+
+            print("Final URL:", page.url, flush=True)
 
         finally:
             await browser.close()
