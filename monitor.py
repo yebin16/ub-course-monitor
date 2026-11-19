@@ -7,27 +7,39 @@ HUB_URL = (
     "SSR_STUDENT_FL.SSR_MD_SP_FL.GBL"
 )
 
+
 async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
+        page = await browser.new_page(
+            viewport={"width": 1440, "height": 900}
+        )
 
         try:
-            print("Opening UB HUB Public Class Schedule...")
-            response = await page.goto(
+            print("Opening HUB Public Class Schedule...")
+            await page.goto(
                 HUB_URL,
                 wait_until="domcontentloaded",
                 timeout=60000
             )
 
-            await page.wait_for_timeout(8000)
+            await page.get_by_text(
+                "COURSE SCHEDULE", exact=True
+            ).wait_for(timeout=30000)
 
-            print("HTTP status:", response.status if response else "N/A")
+            print("Clicking COURSE SCHEDULE...")
+            await page.get_by_text(
+                "COURSE SCHEDULE", exact=True
+            ).click()
+
+            await page.wait_for_timeout(5000)
+
             print("Current URL:", page.url)
             print("Page title:", await page.title())
-
-            body = await page.locator("body").inner_text()
-            print("Page preview:", body[:2000])
+            print(
+                "Page preview:",
+                (await page.locator("body").inner_text())[:3000]
+            )
 
             await page.screenshot(
                 path="hub-test.png",
@@ -36,5 +48,6 @@ async def main():
 
         finally:
             await browser.close()
+
 
 asyncio.run(main())
